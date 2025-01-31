@@ -1,0 +1,11 @@
+{
+    "name": "conjunto-solucion/php-auth-api",
+    "description": "Plantilla de API con autenticación y autorización",
+    "type": "template",
+    "license": "GPL V3",
+    "minimum-stability": "dev",
+    "require": {
+        "firebase/php-jwt": "^6.10",
+        "vlucas/phpdotenv": "^5.6@dev"
+    }
+}
