@@ -11,11 +11,6 @@ Las tecnologías usadas son:
 
 Cree un archivo `.env` en el directorio raíz y configure las variables de entorno. En `example.env` puede encontrar un ejemplo con el formato esperado.
 
-Habilite fileinfo en php.ini
-```ini
-extension=fileinfo
-```
-
 Instale las dependencias y ejecute el servidor de prueba con:
 ```sh
 composer install
@@ -23,7 +18,7 @@ sudo php -S localhost:80 ./public/index.php
 ```
 (requiere composer 1 y php 7.4.3 o superior)
 
-Puede hacer pruebas manualmente o usando algún cliente especializado (como Postman). En [este repositorio](github.com/conjunto-solucion/react-auth-client) encontrará un proyecto de React creado específicamente para probar esta API.
+Puede hacer pruebas manualmente o usando algún cliente especializado (como Postman). En [este repositorio](https://github.com/conjunto-solucion/react-auth-client) encontrará un proyecto de React creado específicamente para probar esta API.
 
 ## Preparar la aplicación para producción.
 
