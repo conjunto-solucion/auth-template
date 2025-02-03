@@ -16,7 +16,6 @@ final class Database {
         $query = $connection->prepare($sql);
         $query->execute($values);
 
-        var_dump($connection);
         return $query->fetchAll(\PDO::FETCH_ASSOC);
     }
     
@@ -24,7 +23,6 @@ final class Database {
         $connection = self::getConnection();
         $query = $connection->prepare($sql);
 
-        var_dump($connection);
         $query->execute($values);
     }
 
