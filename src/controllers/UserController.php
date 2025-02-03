@@ -24,6 +24,8 @@ final class UserController {
             case 'PUT': return $this->handleLogIn();
 
             case 'GET': return $this->handleGetUser();
+
+            case 'HEAD': return $this->handleVerifyToken();
         
             default: return new Response(Response::HTTP_METHOD_NOT_ALLOWED, false, "Método no soportado");
         }
@@ -63,5 +65,16 @@ final class UserController {
 
         $userId = Auth::extractUserId($this->request->getAccessToken());
         return $this->serviceProvider->getUserById($userId);
+    }
+
+
+    private function handleVerifyToken(): Response {
+
+        if (Auth::isValidToken($this->request->getRefreshToken())) {
+            $userId = Auth::extractUserId($this->request->getRefreshToken());
+            $session = Auth::createUserSessionJson($userId);
+            return new Response(Response::HTTP_OK, true, "Verificado exitosamente", $session);
+        }
+        return new Response(Response::HTTP_UNAUTHORIZED, false, "No pudimos verificar tu identidad, vuelva a iniciar sesión");
     }
 }

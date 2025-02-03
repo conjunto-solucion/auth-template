@@ -102,6 +102,24 @@ sudo systemctl restart apache2
 }
 ```
 
+**Verificar y refrescar token.**
+* Ruta de acceso: /users
+* Método: HEAD
+* Necesita autorización: sí
+* Responde con estado 200
+* Input: ninguno
+* Output:
+```ts
+{
+  content: {
+    accessToken: string,
+    refreshToken: string
+  },
+  message: string 
+}
+```
+
+
 **Recuperar información de la cuenta.**
 * Ruta de acceso: /users
 * Método: GET
