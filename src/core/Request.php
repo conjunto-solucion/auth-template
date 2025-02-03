@@ -18,8 +18,8 @@ final class Request {
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->URI = $_SERVER['REQUEST_URI'];
         $this->content = file_get_contents('php://input');
-        $this->accessToken = $_COOKIE['access_token'] ?? "";
-        $this->refreshToken = $_COOKIE['refresh_token'] ?? "";
+        $this->accessToken = $_COOKIE['accessToken'] ?? "";
+        $this->refreshToken = $_COOKIE['refreshToken'] ?? "";
     }
 
 
@@ -58,14 +58,9 @@ final class Request {
             header("Content-Type: $mime_type");
             readfile($response->filepath);
 
-            exit;
         }
 
-        header("Content-Type: application/json");
-        echo json_encode([
-            "message" => $response->message,
-            "content" => $response->jsonContent
-        ]);
+        echo json_encode(new ResponseBody($response->message, $response->content));
     
         exit;
     }

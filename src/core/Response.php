@@ -1,7 +1,6 @@
 <?php
 namespace Core;
 
-
 final class Response {
     public const HTTP_CONTINUE = 100;
     public const HTTP_OK = 200;
@@ -23,14 +22,14 @@ final class Response {
     public int $statusCode;
     public bool $ok;
     public string $message;
-    public string $jsonContent;
+    public $content;
     public string $filepath;
 
-    public function __construct(int $statusCode, bool $ok, string $message="", string $jsonContent="", string $filepath="") {
+    public function __construct(int $statusCode, bool $ok, string $message="", $content=array(), string $filepath="") {
         $this->statusCode = $statusCode;
         $this->ok = $ok;
         $this->message = $message;
-        $this->jsonContent = $jsonContent;
+        $this->content = $content;
         $this->filepath = $filepath;
     }
 

@@ -12,8 +12,8 @@ define("KEY", $_ENV['JWT_SECRET_KEY']);
 final class Auth {
 
 
-    public static function createUserSessionJson(int $userId): string {
-        return json_encode(new Session($userId));
+    public static function createUserSession(int $userId): Session {
+        return new Session($userId);
     }
 
 
@@ -22,7 +22,7 @@ final class Auth {
         return false;
         
         $decoded = JWT::decode($jwt, new Key(KEY, ALGORITHM));
-        return ($decoded->iss == ISSUER && $decoded->iat < time() && $decoded->exp > time());
+        return ($decoded->iss == ISSUER && $decoded->iat <= time() && $decoded->exp >= time());
     }
 
     public static function extractUserId(string $jwt): int {

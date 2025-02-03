@@ -24,8 +24,7 @@ final class UserRepository {
 
         $sql = "select user_id from user where email = ?";
         $createdUser = Database::runQuery($sql, [$user->getEmail()])[0];
-        $responseJson = json_encode(["userId" => $createdUser["user_id"]]);
-        return new Response(Response::HTTP_CREATED, true, "La cuenta se creó exitosamente", $responseJson);
+        return new Response(Response::HTTP_CREATED, true, "La cuenta se creó exitosamente", ["userId" => $createdUser["user_id"]]);
     }
 
     public static function logIn($email, $password): Response {
@@ -37,8 +36,7 @@ final class UserRepository {
             return new Response(Response::HTTP_BAD_REQUEST, false, "Correo o contraseña incorrecta");
         }
         
-        $logInSuccessResponseContent = json_encode(["userId" => $user["user_id"]]);
-        return new Response(Response::HTTP_OK, true, "Se inició sesión correctamente", $logInSuccessResponseContent);
+        return new Response(Response::HTTP_OK, true, "Se inició sesión correctamente", ["userId" => $user["user_id"]]);
     }
 
     public static function getUserById(int $id): Response {
@@ -49,7 +47,10 @@ final class UserRepository {
             return new Response(Response::HTTP_BAD_REQUEST, false, "No existe la cuenta solicitada");
         }
 
-        $userDataJson = json_encode(["username"=>$user["username"], "email"=>$user["email"]]);
-        return new Response(Response::HTTP_OK, true, "Se inició sesión correctamente", $userDataJson);
+        $userData = [
+            "username"=>$user["username"],
+            "email"=>$user["email"]
+        ];
+        return new Response(Response::HTTP_OK, true, "Se inició sesión correctamente", $userData);
     }
 }

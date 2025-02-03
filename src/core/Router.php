@@ -1,5 +1,6 @@
 <?php
 namespace Core;
+use Controllers\AuthController;
 use Controllers\ProfilePhotoController;
 use Controllers\UserController;
 use Core\Response;
@@ -28,6 +29,12 @@ final class Router {
 
             case "/profile_photos":
                 $controller = new ProfilePhotoController($this->request);
+                $response = $controller->handleRequest();
+                $this->request->respond($response);
+                return;
+
+            case "/auth":
+                $controller = new AuthController($this->request);
                 $response = $controller->handleRequest();
                 $this->request->respond($response);
                 return;

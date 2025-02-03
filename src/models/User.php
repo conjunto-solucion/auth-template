@@ -3,7 +3,7 @@ namespace Models;
 
 
 
-class User {
+final class User implements \JsonSerializable {
     private int $user_id;
     private string $username;
     private string $email;
@@ -25,5 +25,12 @@ class User {
 
     public function getPassword(): string {
         return $this->password;
+    }
+
+    public function jsonSerialize(): array {
+        return [
+            'username' => $this->username,
+            'email' => $this->email
+        ];
     }
 }

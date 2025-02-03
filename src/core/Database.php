@@ -1,6 +1,5 @@
 <?php
 namespace Core;
-use ErrorException;
 
 final class Database {
 
@@ -37,7 +36,7 @@ final class Database {
         $filePath = $uploadDir . $filename;
 
         if (!move_uploaded_file($file["tmp_name"], $filePath)) {
-            throw new ErrorException("No se pudo guardar la imagen");
+            throw new \Exception("No se pudo guardar la imagen");
         }
 
         return $filePath;

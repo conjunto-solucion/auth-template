@@ -11,6 +11,11 @@ Las tecnologías usadas son:
 
 Cree un archivo `.env` en el directorio raíz y configure las variables de entorno. En `example.env` puede encontrar un ejemplo con el formato esperado.
 
+Habilite fileinfo en php.ini
+```ini
+extension=fileinfo
+```
+
 Instale las dependencias y ejecute el servidor de prueba con:
 ```sh
 composer install
@@ -103,8 +108,8 @@ sudo systemctl restart apache2
 ```
 
 **Verificar y refrescar token.**
-* Ruta de acceso: /users
-* Método: HEAD
+* Ruta de acceso: /auth
+* Método: GET
 * Necesita autorización: sí
 * Responde con estado 200
 * Input: ninguno
