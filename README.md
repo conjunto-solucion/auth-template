@@ -50,7 +50,8 @@ sudo a2ensite php-auth-api.conf
 sudo systemctl restart apache2
 ```
 
-## Descripción de la API
+
+## Descripción de los endpoints
 
 **Crear cuenta de usuario.**
 * Ruta de acceso: /users
@@ -69,31 +70,17 @@ sudo systemctl restart apache2
 * Output:
 ```ts
 {
-  userId: string,
-  accessToken: string,
-  refreshToken: string
+  content: {
+    accessToken: string,
+    refreshToken: string
+  }
+  message: string
 }
 ```
 
-
-**Subir foto de perfil.**
-* Ruta de acceso: /profile_photos
-* Método: POST
-* Tipo de contenido: multipart/form-data
-* Requiere autorización: sí
-* Responde con estado 201
-* Input:
-```ts
-{
-  userId: string,
-  profilePhoto: Blob
-}
-```
-* Output: ninguno
-
-**Auntenticar.**
-* Ruta de acceso: /sessions
-* Método: POST
+**Iniciar sesión.**
+* Ruta de acceso: /users
+* Método: PUT
 * Tipo de contenido: application/json
 * Necesita autorización: no
 * Responde con estado 200
@@ -107,31 +94,54 @@ sudo systemctl restart apache2
 * Output:
 ```ts
 {
-  userId: string,
-  accessToken: string,
-  refreshToken: string
+  content: {
+    accessToken: string,
+    refreshToken: string
+  },
+  message: string 
 }
 ```
 
 **Recuperar información de la cuenta.**
-* Ruta de acceso: /users?userId=${userId}
+* Ruta de acceso: /users
 * Método: GET
-* Tipo de contenido: ninguno
 * Requiere autorización: sí
 * Responde con estado 200
 * Input: ninguno
 * Output:
 ```ts
 {
-  username: string,
-  email: string
+  message: string
+  content: {
+    username: string,
+    email: string
+  }
+}
+
+
+```
+**Subir foto de perfil.**
+* Ruta de acceso: /profile_photos
+* Método: POST
+* Tipo de contenido: multipart/form-data
+* Requiere autorización: sí
+* Responde con estado 200
+* Input:
+```ts
+{
+  profilePhoto: Blob
+}
+```
+* Output:
+```
+{
+  message: string
 }
 ```
 
 **Recuperar foto de perfil.**
-* Ruta de acceso: /profile_photos?userId=${userId}
+* Ruta de acceso: /profile_photos
 * Método: GET
-* Tipo de contenido: ninguno
 * Requiere autorización: sí
 * Responde con estado 200
 * Input: ninguno
