@@ -105,7 +105,7 @@ Acceda a la aplicación desde http://localhost:81/ y a la API desde http://local
 ## Descripción de los endpoints
 
 **Crear cuenta de usuario.**
-* Ruta de acceso: /users
+* Ruta de acceso: /api/users
 * Método: POST
 * Tipo de contenido: application/json
 * Requiere autorización: no
@@ -130,7 +130,7 @@ Acceda a la aplicación desde http://localhost:81/ y a la API desde http://local
 ```
 
 **Iniciar sesión.**
-* Ruta de acceso: /users
+* Ruta de acceso: /api/users
 * Método: PUT
 * Tipo de contenido: application/json
 * Necesita autorización: no
@@ -154,7 +154,7 @@ Acceda a la aplicación desde http://localhost:81/ y a la API desde http://local
 ```
 
 **Verificar y refrescar token.**
-* Ruta de acceso: /auth
+* Ruta de acceso: /api/auth
 * Método: GET
 * Necesita autorización: sí
 * Responde con estado 200
@@ -172,7 +172,7 @@ Acceda a la aplicación desde http://localhost:81/ y a la API desde http://local
 
 
 **Recuperar información de la cuenta.**
-* Ruta de acceso: /users
+* Ruta de acceso: /api/users
 * Método: GET
 * Requiere autorización: sí
 * Responde con estado 200
@@ -190,7 +190,7 @@ Acceda a la aplicación desde http://localhost:81/ y a la API desde http://local
 
 ```
 **Subir foto de perfil.**
-* Ruta de acceso: /profile_photos
+* Ruta de acceso: /api/profile_photos
 * Método: POST
 * Tipo de contenido: multipart/form-data
 * Requiere autorización: sí
@@ -209,7 +209,7 @@ Acceda a la aplicación desde http://localhost:81/ y a la API desde http://local
 ```
 
 **Recuperar foto de perfil.**
-* Ruta de acceso: /profile_photos
+* Ruta de acceso: /api/profile_photos
 * Método: GET
 * Requiere autorización: sí
 * Responde con estado 200
