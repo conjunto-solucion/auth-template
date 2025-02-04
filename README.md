@@ -33,10 +33,11 @@ Para este ejemplo voy a asumir lo siguiente:
 
 * El servidor es **apache2**
 * El servidor escucha en localhost:80, y las llamadas a la API comienzan con localhost:80/api/
+* El frontend es una SPA con un index.html (por ejemplo, creada con React)
 * La aplicación subida al servidor tiene la siguiente estructura:
 ```sh
 /var/www/ejemplo/
-|  frontend/ # contiene un proyecto compilado de React  
+|  frontend/ # contiene una build de SPA
 |  api/ # contiene este proyecto de PHP
 |  | public/index.php
 |  | src/
@@ -53,7 +54,7 @@ Habilite los módulos necesarios de apache2:
 sudo a2enmod rewrite headers proxy proxy_http
 ```
 
-Configure apache2. Cree un archivo de configuración `/etc/apache2/sites-available/ejemplo.conf`. El archivo debería verse algo como esto:
+Configure apache2. Cree un archivo de configuración `/etc/apache2/sites-available/ejemplo.conf`:
 
 ```apache
 <VirtualHost *:80>
@@ -88,7 +89,7 @@ Configure apache2. Cree un archivo de configuración `/etc/apache2/sites-availab
 	CustomLog ${APACHE_LOG_DIR}/ejemplo_access.log combined
 </VirtualHost>
 ```
-Otorgue a apache2 para crear archivos en el directorio `api/uploads/` con:
+Otorgue a apache2 permisos para crear archivos en el directorio `api/uploads/` con:
 ```
 sudo chown -R www-data:www-data /var/www/ejemplo/api/uploads
 sudo chmod -R 775 /var/www/ejemplo/api/uploads
@@ -100,7 +101,7 @@ sudo a2ensite ejemplo.conf
 sudo systemctl restart apache2
 ```
 
-Acceda a la aplicación desde http://localhost:81/ y a la API desde http://localhost:81/api/.
+Acceda a la aplicación desde http://localhost:80/ y a la API desde http://localhost:80/api/.
 
 ## Descripción de los endpoints
 
