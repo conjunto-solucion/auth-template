@@ -11,10 +11,7 @@ Las tecnologías usadas son:
 
 Cree un archivo `.env` en el directorio raíz y configure las variables de entorno. En `example.env` puede encontrar un ejemplo con el formato esperado.
 
-Habilite fileinfo en php.ini
-```ini
-extension=fileinfo
-```
+Ejecute con MySQL el script `./php-auth-api-sql`.
 
 Instale las dependencias y ejecute el servidor de prueba con:
 ```sh
@@ -23,7 +20,7 @@ sudo php -S localhost:80 ./public/index.php
 ```
 (requiere composer 1 y php 7.4.3 o superior)
 
-Puede hacer pruebas manualmente o usando algún cliente especializado (como Postman). En [este repositorio](github.com/conjunto-solucion/react-auth-client) encontrará un proyecto de React creado específicamente para probar esta API.
+Puede hacer pruebas manualmente o usando algún cliente especializado (como Postman). En [este repositorio](https://github.com/conjunto-solucion/react-auth-client) encontrará un proyecto de React creado específicamente para probar esta API.
 
 ## Preparar la aplicación para producción.
 
@@ -32,29 +29,78 @@ Instale dependencias con:
 composer install --no-dev --optimize-autoloader
 ```
 
-Copie el proyecto en el directorio público del servidor (por ejemplo: `/var/www/html/`)
+Para este ejemplo voy a asumir lo siguiente:
 
-Configure el servidor. El siguiente es un ejemplo con apache2 desde `sites-available/php-auth-api.conf`:
+* El servidor es **apache2**
+* El servidor escucha en localhost:80, y las llamadas a la API comienzan con localhost:80/api/
+* La aplicación subida al servidor tiene la siguiente estructura:
+```sh
+/var/www/ejemplo/
+|  frontend/ # contiene un proyecto compilado de React  
+|  api/ # contiene este proyecto de PHP
+|  | public/index.php
+|  | src/
+|  | uploads/
+```
+
+Verifique que tiene instalados los siguientes paquetes:
+```
+sudo apt install apache2 php libapache2-mod-php php-cli php-mysql php-mbstring unzip curl
+```
+
+Habilite los módulos necesarios de apache2:
+```
+sudo a2enmod rewrite headers proxy proxy_http
+```
+
+Configure apache2. Cree un archivo de configuración `/etc/apache2/sites-available/ejemplo.conf`. El archivo debería verse algo como esto:
+
 ```apache
 <VirtualHost *:80>
-    DocumentRoot /var/www/php-auth-api/public
+	ServerName localhost
+	DocumentRoot /var/www/ejemplo/frontend
 
-    <Directory /var/www/php-auth-api/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
+	<Directory /var/www/ejemplo/frontend>
+		Options -Indexes +FollowSymLinks
+		AllowOverride All
+		Require all granted
 
-    ErrorLog ${APACHE_LOG_DIR}/php-auth-api_error.log
-    CustomLog ${APACHE_LOG_DIR}/php-auth-api_access.log combined
+		RewriteEngine On
+
+		RewriteCond %{REQUEST_FILENAME} !-f
+		RewriteCond %{REQUEST_FILENAME} !-d
+
+		RewriteRule ^ index.html [L]
+	</Directory>
+
+	Alias /api /var/www/ejemplo/api/public
+	<Directory /var/www/ejemplo/api/public>
+		Options -Indexes +FollowSymLinks
+		AllowOverride All
+		Require all granted
+
+		RewriteEngine On
+		RewriteCond %{REQUEST_FILENAME} !-f
+		RewriteRule ^(.*)$ index.php [QSA,L]
+	</Directory>
+
+	ErrorLog ${APACHE_LOG_DIR}/ejemplo_error.log
+	CustomLog ${APACHE_LOG_DIR}/ejemplo_access.log combined
 </VirtualHost>
 ```
+Otorgue a apache2 para crear archivos en el directorio `api/uploads/` con:
+```
+sudo chown -R www-data:www-data /var/www/ejemplo/api/uploads
+sudo chmod -R 775 /var/www/ejemplo/api/uploads
+```
+
 Luego inicie el servidor usando:
 ```sh
-sudo a2enmod headers
-sudo a2ensite php-auth-api.conf
+sudo a2ensite ejemplo.conf
 sudo systemctl restart apache2
 ```
 
+Acceda a la aplicación desde http://localhost:81/ y a la API desde http://localhost:81/api/.
 
 ## Descripción de los endpoints
 
@@ -156,7 +202,7 @@ sudo systemctl restart apache2
 }
 ```
 * Output:
-```
+```ts
 {
   message: string
 }
