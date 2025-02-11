@@ -14,12 +14,20 @@ class Session implements \JsonSerializable {
         $this->refreshToken = $this->generateJWT(true);
     }
 
+    public function getAccessToken(): string {
+        return $this->accessToken;
+    }
+
+    public function getRefreshToken(): string {
+        return $this->refreshToken;
+    }
+
     private function generateJWT(bool $isRefreshToken=false): string {
         return JWT::encode([
             "iss" => ISSUER,
             "sub" => $this->userId,
             "iat" => time(),
-            "exp" => time() + ($isRefreshToken? ACCESS_TOKEN_EXPIRATION_TIME : REFRESH_TOKEN_EXPIRATION_TIME)
+            "exp" => $isRefreshToken? ACCESS_TOKEN_EXPIRATION_TIME : REFRESH_TOKEN_EXPIRATION_TIME
         ], KEY, ALGORITHM );
     }
 

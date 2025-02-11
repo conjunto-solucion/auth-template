@@ -3,8 +3,8 @@ namespace Middleware;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-const ACCESS_TOKEN_EXPIRATION_TIME = 3600; // una hora.
-const REFRESH_TOKEN_EXPIRATION_TIME = 604800; // una semana.
+define("ACCESS_TOKEN_EXPIRATION_TIME", time() + 3600); // una hora.
+define("REFRESH_TOKEN_EXPIRATION_TIME", time() + 604800); // una semana.
 const ALGORITHM = 'HS256';
 const ISSUER = 'php-auth-api';
 define("KEY", $_ENV['JWT_SECRET_KEY']);
@@ -12,8 +12,16 @@ define("KEY", $_ENV['JWT_SECRET_KEY']);
 final class Auth {
 
 
-    public static function createUserSession(int $userId): Session {
-        return new Session($userId);
+    public static function setUserSession(int $userId): void {
+        $session = new Session($userId);
+
+        setcookie("accessToken", $session->getAccessToken(), ACCESS_TOKEN_EXPIRATION_TIME, "/", "localhost", false, true);
+        setcookie("refreshToken", $session->getRefreshToken(), REFRESH_TOKEN_EXPIRATION_TIME, "/", "localhost", false, true);
+    }
+
+    public static function expireUserSession(): void {
+        setcookie("accessToken", "", time() - 3600, "/", "localhost", false, true);
+        setcookie("refreshToken", "", time() - 3600, "/", "localhost", false, true);
     }
 
 

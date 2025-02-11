@@ -21,8 +21,6 @@ final class UserController {
 
             case 'POST': return $this->handleCreateUserAccount();
 
-            case 'PUT': return $this->handleLogIn();
-
             case 'GET': return $this->handleGetUser();
         
             default: return new Response(Response::HTTP_METHOD_NOT_ALLOWED, false, "Método no soportado");
@@ -37,22 +35,8 @@ final class UserController {
         if (!$response->ok) return $response;
 
         $userId = $response->content["userId"];
-        $session = Auth::createUserSession($userId);
-        return new Response($response->statusCode, $response->ok, $response->message, $session);
-    }
-
-    private function handleLogIn(): Response {
-        
-        $data = json_decode($this->request->getContent());
-        $email = $data->email;
-        $password = $data->password;
-
-        $response = $this->serviceProvider->logIn($email, $password);
-        if (!$response->ok) return $response;
-
-        $userId = $response->content["userId"];
-        $session = Auth::createUserSession($userId);
-        return new Response($response->statusCode, $response->ok, $response->message, $session);
+        Auth::setUserSession($userId);
+        return new Response($response->statusCode, $response->ok, $response->message);
     }
 
     private function handleGetUser(): Response {

@@ -21,19 +21,19 @@ final class Router {
         
         switch ($this->request->getPath()) {
 
-            case "/users":
+            case "/api/users":
                 $controller = new UserController($this->request);
                 $response = $controller->handleRequest();
                 $this->request->respond($response);
                 return;
 
-            case "/profile_photos":
+            case "/api/profile_photos":
                 $controller = new ProfilePhotoController($this->request);
                 $response = $controller->handleRequest();
                 $this->request->respond($response);
                 return;
 
-            case "/auth":
+            case "/api/auth":
                 $controller = new AuthController($this->request);
                 $response = $controller->handleRequest();
                 $this->request->respond($response);

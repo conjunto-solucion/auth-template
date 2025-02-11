@@ -122,17 +122,13 @@ Acceda a la aplicación desde http://localhost:80/ y a la API desde http://local
 * Output:
 ```ts
 {
-  content: {
-    accessToken: string,
-    refreshToken: string
-  }
   message: string
 }
 ```
 
 **Iniciar sesión.**
-* Ruta de acceso: /api/users
-* Método: PUT
+* Ruta de acceso: /api/auth
+* Método: POST
 * Tipo de contenido: application/json
 * Necesita autorización: no
 * Responde con estado 200
@@ -146,27 +142,32 @@ Acceda a la aplicación desde http://localhost:80/ y a la API desde http://local
 * Output:
 ```ts
 {
-  content: {
-    accessToken: string,
-    refreshToken: string
-  },
+  message: string 
+}
+```
+
+**Cerrar sesión.**
+* Ruta de acceso: /api/auth
+* Método: DELETE
+* Necesita autorización: no
+* Responde con estado 200
+* Input: ninguno
+* Output:
+```ts
+{
   message: string 
 }
 ```
 
 **Verificar y refrescar token.**
 * Ruta de acceso: /api/auth
-* Método: GET
+* Método: PUT
 * Necesita autorización: sí
 * Responde con estado 200
 * Input: ninguno
 * Output:
 ```ts
 {
-  content: {
-    accessToken: string,
-    refreshToken: string
-  },
   message: string 
 }
 ```
