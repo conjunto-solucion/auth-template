@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "skipLibCheck": true,
+    "types": [],
+    "outDir": "./dist",
+    
+
+    "module": "ESNext",
+    "rootDir": "./src/",
+    "moduleResolution": "node",
+    "baseUrl": "./src/",
+    "paths": {},
+    "allowJs": false,
+    
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "preserveSymlinks": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowUnreachableCode": false,
+  },
+
+  "include": ["./src/"],
+  "exclude": ["./node_modules", "./dist"],
+  "typeRoots": ["./src/types", "./node_modules/@types"]
+}

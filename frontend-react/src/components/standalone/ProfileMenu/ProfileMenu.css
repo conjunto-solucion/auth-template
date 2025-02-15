@@ -1,0 +1,14 @@
+#profile-menu {
+  width: min-content;
+  height: min-content;
+}
+
+#profile-menu img {
+  border-radius: 50%;
+  object-position: center;
+  object-fit: fill;
+  margin-right: 1rem;
+  padding: 3px;
+  width: 2rem;
+  height: 2rem;
+}

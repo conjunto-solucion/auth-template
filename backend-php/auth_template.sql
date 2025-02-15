@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS `php-auth-api`;
-USE `php-auth-api`;
+CREATE DATABASE IF NOT EXISTS `auth_template`;
+USE `auth_template`;
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (

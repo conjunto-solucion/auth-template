@@ -1,0 +1,29 @@
+{
+  "include": ["src/*", "libs", "libs/formtsx"],
+  "compilerOptions": {
+    "target": "es5",
+    "noEmit": true,
+    "noImplicitAny": true,
+    "module": "ES2020",
+    
+      
+    "jsx": "react",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "noUnusedLocals": true,
+
+    "baseUrl": "./src/",
+    "paths": {
+      "adapters/*":["./adapters/*"],
+      "assets/*":["./assets/*"],
+      "components/*":["./components/*"],
+      "types/*":["./types/*"],
+      "pages/*":["./pages/*"],
+      "services/*":["./services/*"],
+      "validators/*":["./validators/*"]
+    }
+  }
+}

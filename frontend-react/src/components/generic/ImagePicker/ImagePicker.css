@@ -1,0 +1,51 @@
+.formtsx-default-imagepicker {
+    width: max-content;
+    cursor: pointer;
+    position: relative;
+    display: block;
+    font-size: 1rem;
+}
+.formtsx-default-imagepicker>input {
+    display: none;
+}
+
+.formtsx-default-imagepicker>div {
+    background-color: gainsboro;
+    width: 10rem;
+    height: 10rem;
+    margin: .5rem;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    overflow: hidden;
+}
+.formtsx-default-imagepicker>div:hover {
+    background-color: #ccc;
+}
+
+.formtsx-default-imagepicker>div>img {
+    background-color: gainsboro;
+    align-content: center;
+    width: 100%;
+    height: 100%;
+    object-fit:cover;
+    image-rendering:auto;
+}
+
+.formtsx-default-imagepicker>svg {
+    color: black;
+    background-color: gainsboro;
+    font-size: 2rem;
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+
+    display:block;
+    border-radius: 5px;
+    margin: 0;
+    padding: .2rem;
+    z-index: 1;
+}
+
+.formtsx-default-imagepicker>svg:hover {
+    color: red;
+}

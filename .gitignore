@@ -1,5 +1,10 @@
 .vscode
-build
 .env
-vendor
+
+build
+dist
+
 uploads
+
+node_modules
+vendor

@@ -1,0 +1,43 @@
+{
+  "name": "express-auth-api",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "API con autenticación y autorización",
+  "main": "index.ts",
+  "scripts": {
+    "start": "tsc && sudo npx tsx ./src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/conjunto-solucion/express-auth-api.git"
+  },
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/conjunto-solucion/express-auth-api/issues"
+  },
+  "homepage": "https://github.com/conjunto-solucion/express-auth-api#readme",
+  "devDependencies": {
+    "@types/argon2": "^0.14.1",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/express-fileupload": "^1.5.1",
+    "@types/file-type": "^10.6.0",
+    "@types/jsonwebtoken": "^9.0.8",
+    "@types/node": "^22.13.1",
+    "@types/pg": "^8.11.11",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "argon2": "^0.41.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-fileupload": "^1.5.1",
+    "file-type": "^20.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1"
+  }
+}
