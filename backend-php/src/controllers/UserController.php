@@ -30,7 +30,11 @@ final class UserController {
     private function handleCreateUserAccount(): Response {
         
         $data = json_decode($this->request->getContent());
-        $user = new User($data->username, $data->email, $data->password);
+        $username = trim($data->username);
+        $email = strtolower(trim($data->email));
+        $password = trim($data->password);
+
+        $user = new User($username, $email, $password);
         $response = $this->serviceProvider->createUserAccount($user);
         if (!$response->ok) return $response;
 

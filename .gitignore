@@ -5,6 +5,8 @@ scripts
 
 build
 dist
+frontend
+api
 
 uploads
 

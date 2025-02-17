@@ -3,7 +3,7 @@ export default async function logIn(email: string, password: string): Promise<bo
   const response = await fetch(process.env.REACT_APP_API+"auth", {
     method: "POST",
     body: JSON.stringify({
-      email: email.trim(),
+      email: email.trim().toLocaleLowerCase(),
       password: password.trim()
     }),
     credentials: "include",

@@ -2,12 +2,17 @@ import {Request, Response} from "express";
 import * as userServices from "../services/userServices.js";
 import * as authServices from "../services/authServices.js";
 import { respond } from "../core/respond.js";
+import user from "../types/user.js";
 
 
 
 export async function handleCreateUserAccount(request: Request, response: Response): Promise<void> {
 
-    const { username, email, password } = request.body;
+    let { username, email, password }: user = request.body;
+    username = username?.trim();
+    email = email?.trim().toLowerCase();
+    password = password?.trim();
+
     const result = await userServices.createUserAccount({ username, email, password });
 
     if (result.ok && result.serializableBody) {
