@@ -29,7 +29,7 @@ export default async function postUser(user: user): Promise<boolean> {
 function userToJson(user: user): string {
   return JSON.stringify({
     username:     user.username.trim(),
-    email:        user.email.trim(),
+    email:        user.email.trim().toLowerCase(),
     password:     user.password.trim(),
   });
 }

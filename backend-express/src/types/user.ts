@@ -9,4 +9,9 @@ export type accessibleUser = {
     email: string
 }
 
+export type login = {
+    email: string,
+    password: string
+}
+
 export default user;

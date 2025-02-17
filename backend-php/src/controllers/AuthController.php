@@ -31,8 +31,8 @@ final class AuthController {
     private function handleLogIn(): Response {
         
         $data = json_decode($this->request->getContent());
-        $email = $data->email;
-        $password = $data->password;
+        $email = strtolower(trim($data->email));
+        $password = trim($data->password);
 
         $response = $this->serviceProvider->logIn($email, $password);
         if (!$response->ok) return $response;
