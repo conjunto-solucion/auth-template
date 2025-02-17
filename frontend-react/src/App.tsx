@@ -15,7 +15,7 @@ const Error404   = lazy(() => import("pages/Error404"))
 
 export default function App(): React.JSX.Element {
 
-    const [userIsLoggedIn, setUserIsLoggedIn] = useState(undefined)
+    const [userIsLoggedIn, setUserIsLoggedIn] = useState(false)
     useEffect(tryGettingAuthorization, [])
 
 
@@ -25,8 +25,6 @@ export default function App(): React.JSX.Element {
   
     
     return (
-        
-        (userIsLoggedIn === undefined) ? <SplashScreen /> :
         
         <Suspense fallback={<SplashScreen />}>
             <Routes>
