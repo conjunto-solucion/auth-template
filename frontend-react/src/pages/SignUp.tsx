@@ -40,12 +40,12 @@ export default function SignUp(): React.JSX.Element {
 
     try {
       setSendingSignupRequest(true)
-      const response = await postUser(user)
+      const ok = await postUser(user)
 
       if (profilePhoto)
       await uploadProfilePhoto(profilePhoto)
 
-      if (response.ok)
+      if (ok)
       window.location.reload();
     }
     catch (error) {

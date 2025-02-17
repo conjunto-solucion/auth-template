@@ -1,4 +1,4 @@
-export default async function logIn(email: string, password: string) {
+export default async function logIn(email: string, password: string): Promise<boolean> {
   
   const response = await fetch(process.env.REACT_APP_API+"auth", {
     method: "POST",
@@ -12,12 +12,16 @@ export default async function logIn(email: string, password: string) {
     }
   });
   
-  const json = await response.text();
 
   if (response.ok) {
-    return response;
+    return true;
   }
-  else {
+
+  try {
+    const json = await response.text();
     throw new Error(JSON.parse(json).message || "Usuario o contraseña incorrecta");
+  }
+  catch {
+    throw new Error("Error inesperado");
   }
 }

@@ -19,8 +19,8 @@ export default function LogIn(): JSX.Element {
     setLoading(true);
 
     try {
-      const response = await logIn(email, password);
-      if (response.ok)
+      const ok = await logIn(email, password);
+      if (ok)
       window.location.reload();
     }
     catch (error) {
