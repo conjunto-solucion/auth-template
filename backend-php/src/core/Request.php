@@ -49,17 +49,6 @@ final class Request {
     public function respond(Response $response) {
 
         http_response_code($response->statusCode);
-
-        if (!empty($response->filepath)) {
-            $file_info = finfo_open(FILEINFO_MIME_TYPE);
-            $mime_type = finfo_file($file_info, $response->filepath);
-            finfo_close($file_info);
-    
-            header("Content-Type: $mime_type");
-            readfile($response->filepath);
-
-        }
-
         echo json_encode(new ResponseBody($response->message, $response->content));
     
         exit;

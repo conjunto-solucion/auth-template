@@ -24,24 +24,26 @@ try {
 
 catch (JsonException $e) {
     $request = new Request();
-    $response = new Response(Response::HTTP_INTERNAL_SERVER_ERROR, false, "Error al procesar la solicitud");
+    $response = new Response(Response::HTTP_INTERNAL_SERVER_ERROR, false, "Error al procesar la solicitud", ["error" => $e->getMessage()]);
     $request->respond($response);
 }
 catch (PDOException $e) {
     $request = new Request();
-    $response = new Response(Response::HTTP_INTERNAL_SERVER_ERROR, false, "Error insesperado en la base de datos");
+    $response = new Response(Response::HTTP_INTERNAL_SERVER_ERROR, false, "Error insesperado en la base de datos", ["error" => $e->getMessage()]);
     $request->respond($response);
 }
 catch (Exception $e) {
     $request = new Request();
-    $response = new Response(Response::HTTP_INTERNAL_SERVER_ERROR, false, "Hubo un error en el servidor");
+    $response = new Response(Response::HTTP_INTERNAL_SERVER_ERROR, false, "Hubo un error en el servidor", ["error" => $e->getMessage()]);
     $request->respond($response);
 }
 
 
 function startApplication(): void {
 
-    header("Access-Control-Allow-Origin: http://localhost:3000");
+    (Dotenv::createImmutable(__DIR__."/.."))->load();
+
+    header("Access-Control-Allow-Origin: http://localhost:".$_ENV['CORS_PORT']);
     header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS");
     header("Access-Control-Allow-Headers: Content-Type, Authorization");
     header("Access-Control-Allow-Credentials: true");
@@ -51,7 +53,6 @@ function startApplication(): void {
         exit;
     }
 
-    (Dotenv::createImmutable(__DIR__."/.."))->load();
     $request = new Request();
     $router = new Router($request);
     $router->dispatch();

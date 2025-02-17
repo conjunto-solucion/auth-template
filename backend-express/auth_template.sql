@@ -1,5 +1,3 @@
-CREATE DATABASE auth_template;
-
 DROP TABLE IF EXISTS "user";
 
 CREATE TABLE "user" (

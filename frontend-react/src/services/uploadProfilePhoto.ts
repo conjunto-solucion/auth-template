@@ -1,4 +1,4 @@
-export default async function uploadProfilePhoto(file: File|Blob): Promise<Response> {
+export default async function uploadProfilePhoto(file: File|Blob): Promise<boolean> {
 
     const formData = new FormData();
     formData.append("profilePhoto", file);
@@ -9,8 +9,14 @@ export default async function uploadProfilePhoto(file: File|Blob): Promise<Respo
         credentials: "include"
     })
 
-    if (!response.ok)
-    throw new Error((await response.json()).message || "Error al subir la foto de perfil.")
+    if (response.ok)
+    return true;
 
-    return response
+    try {
+        throw new Error((await response.json()).message || "Error al subir la foto de perfil.")
+    }
+    catch {
+        throw new Error("Error al subir la foto de perfil.")
+    }
+    
 }

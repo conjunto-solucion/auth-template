@@ -1,5 +1,7 @@
 .vscode
 .env
+.env.production
+scripts
 
 build
 dist

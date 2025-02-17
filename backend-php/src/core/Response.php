@@ -23,14 +23,12 @@ final class Response {
     public bool $ok;
     public string $message;
     public $content;
-    public string $filepath;
 
-    public function __construct(int $statusCode, bool $ok, string $message="", $content=array(), string $filepath="") {
+    public function __construct(int $statusCode, bool $ok, string $message="", $content=array()) {
         $this->statusCode = $statusCode;
         $this->ok = $ok;
         $this->message = $message;
         $this->content = $content;
-        $this->filepath = $filepath;
     }
 
 }

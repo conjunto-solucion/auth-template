@@ -5,7 +5,8 @@
   "description": "API con autenticación y autorización",
   "main": "index.ts",
   "scripts": {
-    "start": "tsc && sudo npx tsx ./src/index.ts"
+    "start": "sudo npx tsx ./src/index.ts",
+    "build": "tsc && "
   },
   "repository": {
     "type": "git",

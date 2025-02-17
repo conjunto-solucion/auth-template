@@ -4,6 +4,9 @@
     "type": "template",
     "license": "GPL V3",
     "minimum-stability": "dev",
+    "scripts": {
+        "start": "sudo php -S localhost:80 -t public"
+    },
     "require": {
         "firebase/php-jwt": "^6.10",
         "vlucas/phpdotenv": "^5.6@dev"

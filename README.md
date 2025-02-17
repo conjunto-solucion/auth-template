@@ -6,69 +6,172 @@ Aplicación web básica que ejemplifica un sistema que incluye creación de cuen
 
 Tecnologías principales:
 * En el frontend: Typescript 4.6, React 18.0
-* Backend #1: PHP 7.4, MySQL 8
+* Backend #1: PHP 8.3.17, MySQL 8
 * Backend #2: Typescript 5.7, Express 4.21, PostgreSQL 12
 
+## Instrucciones de desarrollo
 
+Desde `./frontend-react/`:
 
-## Instrucciones para el backend con PHP
+Cree un archivo .env y establezca la variable con la dirección de la API. En `example.env` puede encontrar un ejemplo. 
+Si aún no conoce esta dirección, primero lea en las siguientes secciones cómo configurar un servidor de prueba con la API.
 
-Puede ignorar esta sección si desea usar el backend implementado con Express.
+Una vez hecho esto, descargue las dependencias y ejecute el proyecto de React en modo de desarrollo con
+```
+npm install
+npm start
+```
+En el caso del backend, tiene dos opciones para elegir: Express o PHP. Se describen las instrucciones para ambos casos.
 
-Desde `./backend-php/`:
+### Configurar backend con Express:
+
+Desde `./backend-express/`:
+
+Asegúrese de tener un usuario de PostgreSQL con contraseña establecida, y configurado para usar autenticación con contraseña. De lo contrario la aplicación no podrá acceder a la base de datos.
+Cree una base de datos con el nombre que desee. Luego ejecute con psql el script `./auth_template.sql`. El siguiente es un ejemplo de cómo podría hacer esto:
+
+```sh
+PGPASSWORD=mi_contraseña psql -U mi_usuario -d postgres -c "CREATE DATABASE mi_base_de_datos;"
+
+PGPASSWORD=mi_contraseña psql -U mi_usuario -d mi_base_de_datos -f ./backend-express/auth_template.sql
+```
 
 Cree un archivo `.env` y configure las variables de entorno. En `example.env` puede encontrar un ejemplo con el formato esperado.
 
-Ejecute con MySQL el script `auth_template.sql`.
+Por último, instale las dependencias y ejecute el servidor de prueba con:
+```sh
+npm install
+npm start
+```
 
-Instale las dependencias y ejecute el servidor de prueba con:
+### Configurar backend con PHP:
+
+Desde `./backend-php/`:
+
+Ejecute con MySQL el script `auth_template.sql`.
+```
+mysql -u mi_usuario -pmi_contraseña < auth_template.sql
+```
+
+Cree un archivo `.env` y configure las variables de entorno. En `example.env` puede encontrar un ejemplo con el formato esperado.
+
+Por último, instale las dependencias y ejecute el servidor de prueba con:
 ```sh
 composer install
-sudo php -S localhost:80 ./public/index.php
+sudo php -S localhost:80 -t public
 ```
-(requiere composer 1 y php 7.4.3 o superior)
+
+## Instrucciones de producción
 
 
+### Usando express y nginx
 
-A continuación se explica cómo configurar la aplicación para producción:
+Algunas de las instrucciones a continuación se valen de variables establecidas en un archivo ./backend-express/.env.production...
 
-Instale dependencias con:
+Cargar variables, crear base de datos:
 ```sh
-composer install --no-dev --optimize-autoloader
+source ./backend-express/.env.production
+
+PGPASSWORD=$PG_PASSWORD psql -U $PG_USER -d postgres -c "CREATE DATABASE ${PG_DB};"
+PGPASSWORD=$PG_PASSWORD psql -U $PG_USER -d $PG_DB -f ./backend-express/auth_template.sql
 ```
 
-Para este ejemplo voy a asumir lo siguiente:
-
-* El servidor es **apache2**
-* El servidor escucha en localhost:80, y las llamadas a la API comienzan con localhost:80/api/
-* La aplicación subida al servidor tiene la siguiente estructura:
+Instalar dependencias, crear build:
 ```sh
-/var/www/ejemplo/
-|  frontend/ # proyecto compilado de react
-|  api/ # contiene este proyecto de PHP
-|  | public/index.php
-|  | src/
-|  | uploads/
+sudo apt update
+sudo apt install -y nginx nodejs
+sudo npm install -g pm2 typescript
+cd ./backend-express && npm install && tsc
+cd ../frontend-react && npm run build && cd ..
 ```
 
-Verifique que tiene instalados los siguientes paquetes:
+Copiar aplicación a la ruta del servidor (asumiendo que no está ahí):
+```sh
+mkdir ${NGINX_ROOT_PATH}
+mv ./frontend-react/build "${NGINX_ROOT_PATH}frontend"
+cp -r ./backend-express "${NGINX_ROOT_PATH}backend"
+mv "${NGINX_ROOT_PATH}backend/.env.production" "${NGINX_ROOT_PATH}backend/.env"
 ```
+
+Configure NGINX. Edite el archivo de configuración en `/etc/nginx/sites-available/default`:
+```sh
+sudo tee /etc/nginx/sites-available/default > /dev/null <<EOF
+server {
+  listen ${NGINX_PORT};
+  server_name ${NGINX_SERVER_NAME};
+
+  location / {
+    root ${NGINX_ROOT_PATH}frontend;
+    index index.html;
+    try_files \$uri /index.html;
+  }
+
+  location /api/ {
+    proxy_pass http://localhost:${NODE_PORT};
+    proxy_set_header Host \$host;
+    proxy_set_header X-Real-IP \$remote_addr;
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+  }
+
+  location /uploads/ {
+    root ${NGINX_ROOT_PATH};
+  }
+}
+EOF
+```
+
+Luego inicie los servidores con:
+```sh
+sudo systemctl restart nginx
+pm2 start ${NGINX_ROOT_PATH}backend/dist/index.js
+echo "¡Listo! Acceda a la aplicación desde http://${NGINX_SERVER_NAME}:${NGINX_PORT}"
+```
+
+### Usando php y apache2
+
+Algunas de las instrucciones a continuación se valen de variables establecidas en un archivo ./backend-php/.env.production...
+
+Cargar variables, crear base de datos:
+```sh
+source ./backend-php/.env.production
+
+sudo mysql -u $DB_USER -p${DB_PASSWORD} < ./backend-php/auth_template.sql
+```
+
+Instalar dependencias, crear build:
+```sh
+cd ./backend-php
+sudo apt update
 sudo apt install apache2 php libapache2-mod-php php-cli php-mysql php-mbstring unzip curl
+sudo apt-get install php8.3-mysql
+composer install --no-dev --optimize-autoloader
+cd ../frontend-react && npm run build && cd ..
 ```
 
-Habilite los módulos necesarios de apache2:
+Copiar aplicación a la ruta del servidor (asumiendo que no está ahí):
+```sh
+mkdir ${APACHE_ROOT_PATH}
+cp -r ./frontend-react/build "${APACHE_ROOT_PATH}frontend"
+cp -r ./backend-php ${APACHE_ROOT_PATH}backend
+cp -f "${APACHE_ROOT_PATH}backend/.env.production" "${APACHE_ROOT_PATH}backend/.env"
 ```
-sudo a2enmod rewrite headers proxy proxy_http
+
+Cambiar permisos de escritura:
+```sh
+sudo chown -R www-data:www-data ${APACHE_ROOT_PATH}backend/public/uploads
+sudo chmod -R 775 ${APACHE_ROOT_PATH}backend/public/uploads
 ```
 
-Configure apache2. Cree un archivo de configuración `/etc/apache2/sites-available/ejemplo.conf`:
 
-```apache
-<VirtualHost *:80>
-	ServerName localhost
-	DocumentRoot /var/www/ejemplo/frontend
+Configure apache2. Cree un archivo de configuración `/etc/apache2/sites-available/auth_template.conf`:
 
-	<Directory /var/www/ejemplo/frontend>
+```sh
+sudo tee /etc/apache2/sites-available/auth_template.conf > /dev/null <<EOF
+<VirtualHost *:${APACHE_PORT}>
+	ServerName ${APACHE_SERVER_NAME}
+	DocumentRoot ${APACHE_ROOT_PATH}frontend
+
+	<Directory ${APACHE_ROOT_PATH}frontend>
 		Options -Indexes +FollowSymLinks
 		AllowOverride All
 		Require all granted
@@ -81,8 +184,8 @@ Configure apache2. Cree un archivo de configuración `/etc/apache2/sites-availab
 		RewriteRule ^ index.html [L]
 	</Directory>
 
-	Alias /api /var/www/ejemplo/api/public
-	<Directory /var/www/ejemplo/api/public>
+	Alias /api ${APACHE_ROOT_PATH}backend/public
+	<Directory ${APACHE_ROOT_PATH}backend/public>
 		Options -Indexes +FollowSymLinks
 		AllowOverride All
 		Require all granted
@@ -92,136 +195,35 @@ Configure apache2. Cree un archivo de configuración `/etc/apache2/sites-availab
 		RewriteRule ^(.*)$ index.php [QSA,L]
 	</Directory>
 
-	ErrorLog ${APACHE_LOG_DIR}/ejemplo_error.log
-	CustomLog ${APACHE_LOG_DIR}/ejemplo_access.log combined
+  	Alias /uploads ${APACHE_ROOT_PATH}backend/public/uploads
+	<Directory ${APACHE_ROOT_PATH}backend/public/uploads>
+		Options -Indexes +FollowSymLinks
+		AllowOverride All
+		Require all granted
+	</Directory>
+
 </VirtualHost>
+EOF
 ```
-Otorgue a apache2 permisos para crear archivos en el directorio `api/uploads/` con:
+
+Habilite los módulos de apache2 y active la configuración:
+```sh
+sudo a2enmod rewrite headers proxy proxy_http
+a2ensite auth_template.conf
 ```
-sudo chown -R www-data:www-data /var/www/ejemplo/api/uploads
-sudo chmod -R 775 /var/www/ejemplo/api/uploads
-```
+
+Puede que tenga que habilitar un nuevo puerto en `/etc/apache2/ports.conf`, agregando una línea como Listen n, para permitir que apache2 escuche en el puerto n, donde n es el puerto en el que pretende servir la aplicación.
 
 Luego inicie el servidor usando:
 ```sh
-sudo a2ensite ejemplo.conf
 sudo systemctl restart apache2
+echo "¡Listo! Acceda a la aplicación desde http://${APACHE_SERVER_NAME}:${APACHE_PORT}"
 ```
 
-Acceda a la aplicación desde `http://localhost:80/` y a la API desde `http://localhost:80/api/`.
 
+# Información básica de requisitos del sistema
 
-
-## Instrucciones para el backend con Express
-
-Puede ignorar esta sección si desea usar el backend implementado con PHP.
-
-Desde `./backend-express/`:
-
-Asegúrese de tener un usuario de PostgreSQL con contraseña establecida, y configurado para usar autenticación con contraseña.
-
-Ejecute con psql el script `auth_template.sql`.
-
-Cree un archivo `.env` y configure las variables de entorno. En `example.env` puede encontrar un ejemplo con el formato esperado.
-
-Instale las dependencias y ejecute el servidor de prueba con:
-```sh
-npm install
-npm start
-```
-
-A continuación se explica cómo configurar la aplicación para producción:
-
-Transpile el proyecto a JavaScript con
-```
-tsc
-```
-Esto genera un directorio `dist/` con el proyecto transpilado.
-
-Para este ejemplo voy a asumir lo siguiente:
-
-* El servidor proxy es **NGINX**
-* El servidor NGINX escucha en localhost:80, y el backend (con node) se ejecuta en localhost:2222
-* La aplicación subida al servidor tiene la siguiente estructura:
-```sh
-/var/www/ejemplo/
-|  frontend/ # proyecto compilado de react
-|  backend/ # proyecto de express
-|  | dist/
-|  | src/
-|  uploads/
-```
-
-Verifique que tiene instalados los siguientes paquetes:
-```
-sudo apt update
-sudo apt install nginx -y
-```
-
-Configure NGINX. Edite el archivo de configuración en `/etc/nginx/sites-available/default`:
-
-```nginx
-server {
-  listen 80;
-  server_name localhost;
-
-  location / {
-    root /var/www/ejemplo/frontend;
-    index index.html;
-    try_files $uri /index.html;
-  }
-
-  location /api/ {
-    proxy_pass http://localhost:2222;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-  }
-}
-```
-
-Con esta configuración: las peticiones a localhost:80/api/ son redirigidas a localhost:2222 para ser resueltas por el proceso de node.
-Las demás peticiones a localhost:80 son resueltas por el mismo NGINX, devolviendo el frontend.
-
-
-Luego inicie los servidores con:
-```sh
-sudo systemctl restart nginx
-sudo node /var/www/ejemplo/backend/dist
-```
-
-Si desea que la API siga ejecutandose luego de cerrar la terminal, ejecute el proyecto con pm2:
-```
-pm2 start /var/www/ejemplo/backend/dist/index.js
-```
-
-Acceda a la aplicación desde `http://localhost:80/` y a la API desde `http://localhost:80/api/`
-
-## Instrucciones para el frontend
-
-Puede ignorar esta sección si desea usar un cliente distinto del proyecto de React en este repositorio.
-
-Desde `./frontend-react/`:
-
-Cree un archivo .env y establezca la variable con la dirección de la API. Puede ver un ejemplo en `example.env`. Si aún no conoce esta dirección o no hay un servidor en ejecución con alguno de los dos backends, la aplicación no será utilizable.
-
-Descargue las dependencias y ejecute el proyecto en modo de desarrollo con
-
-```
-npm install
-npm start
-```
-
-Para compilar el proyecto use
-```
-npm run build
-```
-Luego mueva la carpeta generada `./frontend` a la ruta pública del servidor según se especifica en la documentación de alguno de los dos backends.
-
-
-# Información básica de requisitos del sistema.
-
-### Objetivos.
+### Objetivos
 
 `OBJ-1`: crear cuentas de usuario.
 * Descripción: la aplicación debe permitir crear una cuenta de usuario. La cuenta de usuario consiste en un nombre de usuario, email, contraseña y foto de perfil.
@@ -229,7 +231,7 @@ Luego mueva la carpeta generada `./frontend` a la ruta pública del servidor seg
 `OBJ-2`: gestionar sesiones de usuario.
 * Descripción: la aplicación debe permitir iniciar una sesión de usuario. El sistema tiene una pantalla principal que sólo es accesible cuando el sistema detecta una sesión válida activa.
 
-### Requisitos de información.
+### Requisitos de información
 
 `IRQ-1`: información sobre usuarios.
 * Objetivos asociados: OBJ-1.
@@ -239,7 +241,7 @@ Luego mueva la carpeta generada `./frontend` a la ruta pública del servidor seg
     * Contraseña.
     * Foto de perfil.
 
-### Casos de uso.
+### Casos de uso
 
 `UC-1`: Crear cuenta de usuario.
 * Objetivos asociados: OBJ-1.
@@ -277,13 +279,21 @@ Luego mueva la carpeta generada `./frontend` a la ruta pública del servidor seg
 
 ## Descripción de los endpoints
 
-**Crear cuenta de usuario.**
+Resumen:
+* Crear cuenta de usuario: `POST /api/users`
+* Obtener información de la cuenta: `GET /api/users`
+* Iniciar sesión: `POST /api/auth`
+* Cerrar sesión: `DELETE /api/auth`
+* Refrescar sesión: `PUT /api/auth`
+* Subir foto de perfil: `POST /api/profile_photos`
+* Recuperar foto de perfil: `GET /api/profile_photos`
+
+
+### Crear cuenta de usuario
 * Ruta de acceso: /api/users
 * Método: POST
-* Tipo de contenido: application/json
 * Requiere autorización: no
-* Responde con estado 201
-* Input:
+* Input esperado (application/json):
 ```ts
 {
   username: string,
@@ -291,53 +301,63 @@ Luego mueva la carpeta generada `./frontend` a la ruta pública del servidor seg
   password: string
 }
 ```
-* Output:
+* Output (application/json):
 ```ts
 {
   message: string
 }
 ```
 
-**Iniciar sesión.**
+### Obtener información de la cuenta
+* Ruta de acceso: /api/users
+* Método: GET
+* Requiere autorización: sí
+* Output (application/json):
+```ts
+{
+  message: string,
+  content: {
+    username: string,
+    email: string
+  }
+}
+```
+
+### Iniciar sesión
 * Ruta de acceso: /api/auth
 * Método: POST
-* Tipo de contenido: application/json
-* Necesita autorización: no
-* Responde con estado 200
-* Input:
+* Requiere autorización: no
+* Input esperado (application/json):
 ```ts
 {
   email: string,
   password: string
 }
 ```
-* Output:
+* Output (application/json):
 ```ts
 {
   message: string 
 }
 ```
 
-**Cerrar sesión.**
+### Cerrar sesión
 * Ruta de acceso: /api/auth
 * Método: DELETE
 * Necesita autorización: no
-* Responde con estado 200
-* Input: ninguno
-* Output:
+* Output (application/json):
 ```ts
 {
   message: string 
 }
 ```
 
-**Verificar y refrescar token.**
+### Refrescar sesión
 * Ruta de acceso: /api/auth
 * Método: PUT
 * Necesita autorización: sí
-* Responde con estado 200
-* Input: ninguno
-* Output:
+* Input esperado: ninguno
+* Output (application/json):
 ```ts
 {
   message: string 
@@ -345,47 +365,37 @@ Luego mueva la carpeta generada `./frontend` a la ruta pública del servidor seg
 ```
 
 
-**Recuperar información de la cuenta.**
-* Ruta de acceso: /api/users
-* Método: GET
-* Requiere autorización: sí
-* Responde con estado 200
-* Input: ninguno
-* Output:
-```ts
-{
-  message: string
-  content: {
-    username: string,
-    email: string
-  }
-}
 
-
-```
-**Subir foto de perfil.**
+### Subir foto de perfil
 * Ruta de acceso: /api/profile_photos
 * Método: POST
-* Tipo de contenido: multipart/form-data
 * Requiere autorización: sí
-* Responde con estado 200
-* Input:
+* Input esperado (multipart/form-data):
 ```ts
 {
   profilePhoto: Blob
 }
 ```
-* Output:
+* Output (application/json):
 ```ts
 {
-  message: string
+  message: string,
+  content: {
+    profilePhotoURL: string
+  }
 }
 ```
 
-**Recuperar foto de perfil.**
+### Obtener enlace a foto de perfil
 * Ruta de acceso: /api/profile_photos
 * Método: GET
 * Requiere autorización: sí
-* Responde con estado 200
-* Input: ninguno
-* Output: `blob`
+* Output (application/json):
+```ts
+{
+  message: string,
+  content: {
+    profilePhotoURL: string
+  }
+}
+```

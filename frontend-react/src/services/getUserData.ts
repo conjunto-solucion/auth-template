@@ -10,9 +10,16 @@ export default async function getUserData(): Promise<userData> {
         credentials: "include"
     });
 
-    if (response.ok) {
-        return (await response.json()).content;
-    } else {
-        throw new Error((await response.json()).message || "Error al recuperar la información de usuario")
-    }    
+    if (!response.ok)
+    throw new Error((await response.json()).message || "Error al recuperar la información de usuario");
+
+
+    try {
+        const result = (await response.json()).content;
+        return result;
+    }
+    catch {
+        throw new Error("Error al recuperar la información de usuario");
+    }
+    
 }

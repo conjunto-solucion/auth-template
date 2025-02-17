@@ -1,6 +1,6 @@
 import { pool, uploadFile, resolveUploadedFilePath } from "../core/database.js";
 import fileUpload from "express-fileupload";
-import { defaultBadRequest, defaultInternalServerError, defaultOk, defaultWithFile, responseInfo } from "../core/respond.js";
+import { defaultBadRequest, defaultInternalServerError, defaultOk, responseInfo } from "../core/respond.js";
 
 
 export async function uploadUserProfilePhoto(userId: number, file: fileUpload.UploadedFile): Promise<responseInfo> {
@@ -8,9 +8,9 @@ export async function uploadUserProfilePhoto(userId: number, file: fileUpload.Up
     const queryString = `UPDATE "user" SET profile_photo = $1 WHERE user_id = $2`;
 
     try {
-        const filepath = uploadFile(file, userId.toString());
-        await pool.query(queryString, [filepath, userId]);
-        return defaultOk("Imagen subida correctamente");
+        const filename = uploadFile(file, userId.toString());
+        await pool.query(queryString, [filename, userId]);
+        return defaultOk("Imagen subida correctamente", {profilePhotoURL: resolveUploadedFilePath(filename)});
     }
 
     catch (error) {
@@ -32,9 +32,9 @@ export async function getUserProfilePhotoById(userId: number): Promise<responseI
         if (!result.rows[0].profile_photo)
         return defaultBadRequest("El usuario no tiene foto de perfil");
 
-        const filePath = resolveUploadedFilePath(result.rows[0].profile_photo);
+        const filename = result.rows[0].profile_photo;
         
-        return defaultWithFile(filePath);
+        return defaultOk("Dirección de imagen recuperada correctamente", {profilePhotoURL: process.env.FILE_SERVER_PATH+filename})
     }
     catch (error) {
         return defaultInternalServerError("Error al recuperar la imagen de perfil", error);
