@@ -5,18 +5,16 @@ export type responseInfo<T = any> = {
     ok: boolean,
     statusCode: HTTPStatusCode,
     error?: Error | any,
-    serializableBody?: T,
-    filePath?: string
+    serializableBody?: T
 }
 
-export const newResponseInfo = (message: string, ok: boolean, statusCode: HTTPStatusCode, error?: Error, serializableBody?: any, filePath?: string): responseInfo<any> => {
+export const newResponseInfo = (message: string, ok: boolean, statusCode: HTTPStatusCode, error?: Error, serializableBody?: any): responseInfo<any> => {
     return {
         message: message,
         ok: ok,
         statusCode: statusCode,
         error: error,
-        serializableBody: serializableBody,
-        filePath: filePath
+        serializableBody: serializableBody
     }
 }
 
@@ -52,12 +50,6 @@ export function respond(response: Response, info: responseInfo): void {
     if (info.serializableBody) {
         console.log("Terminado con JSON: " + info.message);
         response.status(info.statusCode).json({message: info.message, content: info.serializableBody});
-        return;
-    }
-
-    if (info.filePath) {
-        console.log("Terminado con archivo: " +  info.filePath);
-        response.status(200).sendFile(info.filePath);
         return;
     }
 
@@ -105,13 +97,5 @@ export const defaultOk = (message?: string, content?: any): responseInfo<any> =>
         message: message ?? "",
         statusCode: HTTPStatusCode.OK,
         serializableBody: content
-    }
-}
-
-export const defaultWithFile = (path: string): responseInfo => {
-    return {
-        ok: true,
-        statusCode: HTTPStatusCode.OK,
-        filePath: path
     }
 }

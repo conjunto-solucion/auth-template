@@ -29,8 +29,13 @@ final class Auth {
         if (!$jwt)
         return false;
         
-        $decoded = JWT::decode($jwt, new Key(KEY, ALGORITHM));
-        return ($decoded->iss == ISSUER && $decoded->iat <= time() && $decoded->exp >= time());
+        try {
+            $decoded = JWT::decode($jwt, new Key(KEY, ALGORITHM));
+            return ($decoded->iss == ISSUER && $decoded->iat <= time() && $decoded->exp >= time());
+        }
+        catch(\Exception $e) {
+            return false;
+        }
     }
 
     public static function extractUserId(string $jwt): int {

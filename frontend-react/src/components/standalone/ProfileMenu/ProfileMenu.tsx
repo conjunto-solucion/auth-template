@@ -15,9 +15,12 @@ export default function ProfileMenu(): React.JSX.Element {
     
     function tryGettingUserProfilePhoto() {
         
-        getUserProfilePhoto().then( blob => {
-            if (blob?.size > 100)
-            setProfilePhoto(URL.createObjectURL(blob));
+        getUserProfilePhoto().then( url => {
+            if (url) {
+                console.log("returned: "+url);
+                setProfilePhoto(url);
+            }
+            
         });
     }
     

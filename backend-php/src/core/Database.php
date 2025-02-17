@@ -3,7 +3,7 @@ namespace Core;
 
 final class Database {
 
-    const FILE_UPLOAD_DIRECTORY = __DIR__."/../../uploads/";
+    const FILE_UPLOAD_DIRECTORY = __DIR__."/../../public/uploads/";
 
     private static function getConnection(): \PDO {
         return new \PDO($_ENV["DB_CONNECTION_STRING"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"],
@@ -39,6 +39,6 @@ final class Database {
             throw new \Exception("No se pudo guardar la imagen");
         }
 
-        return $filePath;
+        return $filename;
     }
 }
