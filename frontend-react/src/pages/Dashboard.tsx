@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import getUserData from "services/getUserData"
 
 import LoggedHeader from "components/standalone/LoggedHeader/LoggedHeader"
+import Footer from "components/standalone/Footer/Footer";
 
 
 export default function Dashboard(): React.JSX.Element {
@@ -25,10 +26,12 @@ export default function Dashboard(): React.JSX.Element {
     return <>  
         <LoggedHeader />
         
-        <main>
+        <main style={{minHeight: "80vh"}}>
             <h2>{email?`Iniciaste sesión como ${email}`:""}</h2>
-            Agrega aquí la vista principal de la aplicación
+            Vista principal de la aplicación
         </main>
+
+        <Footer />
     
     </>
 }

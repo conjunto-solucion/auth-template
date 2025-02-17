@@ -11,9 +11,7 @@ export default function Footer(): React.JSX.Element {
       <p>Conjunto Solución GPL V3</p>
 
       <div>
-        <p><a href="https://github.com/conjunto-solucion/react-auth-client">react-auth-client</a></p>
-        <p><a href="https://github.com/conjunto-solucion/php-auth-api">php-auth-api</a></p>
-        <p><a href="https://github.com/conjunto-solucion/express-auth-api">express-auth-api</a></p>
+        <p><a href="https://github.com/conjunto-solucion/auth-template">github.com</a></p>
       </div>
     </FlexDiv>
 
