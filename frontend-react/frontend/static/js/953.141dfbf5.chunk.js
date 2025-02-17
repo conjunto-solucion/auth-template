@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkreact_auth_client=self.webpackChunkreact_auth_client||[]).push([[953],{953:(e,t,c)=>{c.r(t),c.d(t,{default:()=>r});c(43);var n=c(579);function r(){return(0,n.jsx)("h1",{style:{textAlign:"center"},children:"ERROR404"})}}}]);
-//# sourceMappingURL=953.141dfbf5.chunk.js.map
